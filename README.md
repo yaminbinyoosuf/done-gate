@@ -47,6 +47,7 @@ Done Gate catches it at the source, in the session, before it becomes a PR.
 - At most 3 blocks in a row; after that it stops blocking and shows you a warning instead, so it can never trap a session.
 - Python 3 standard library only. One file: `hooks/done_gate.py`.
 - Local stats: `python3 <plugin dir>/hooks/done_gate.py --stats` shows how many claims were stopped and verified.
+- Hooks for your own alerts: set `DONE_GATE_ON_BLOCK` and/or `DONE_GATE_ON_PASS` to a command; it runs in the background with the verdict as its last argument (e.g. a desktop notification, or a light on your desk).
 - Turn it off for one session: start Claude Code with `DONE_GATE_OFF=1`. Remove it: `/plugin uninstall done-gate`.
 
 ## Limits

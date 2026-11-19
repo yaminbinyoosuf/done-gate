@@ -1,6 +1,6 @@
 {
   "name": "done-gate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Stops Claude from ending a turn on an unproven \"tests pass\" or \"build succeeds\", or after quietly weakening tests. Checks the claim against what actually ran.",
   "author": { "name": "COGEXT", "url": "https://cogextai.com" },
   "homepage": "https://github.com/yaminbinyoosuf/done-gate",

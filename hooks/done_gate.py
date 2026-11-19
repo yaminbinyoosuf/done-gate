@@ -18,6 +18,8 @@ import datetime as dt
 import json
 import os
 import re
+import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -220,6 +222,19 @@ def log(rec: dict) -> None:
         pass
 
 
+def notify(var: str, kind: str) -> None:
+    """Run the user's DONE_GATE_ON_BLOCK / DONE_GATE_ON_PASS command (e.g. a light or a desktop
+    notification) in the background, with the verdict kind as its last argument. Never waits."""
+    cmd = os.environ.get(var)
+    if not cmd:
+        return
+    try:
+        subprocess.Popen(shlex.split(cmd) + [kind], start_new_session=True, stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except (OSError, ValueError):
+        pass
+
+
 def stats() -> str:
     rows = []
     try:
@@ -254,6 +269,7 @@ def main() -> int:
         counter(session, reset=True)
         if result["verdict"] == "PASS":
             log(rec)
+            notify("DONE_GATE_ON_PASS", "verified")
         return 0
     n = counter(session)
     if n > MAX_BLOCKS:
@@ -264,6 +280,7 @@ def main() -> int:
                                            + result["reason"].replace("You wrote", "It wrote")}))
         return 0
     log(rec)
+    notify("DONE_GATE_ON_BLOCK", result["kind"])
     print(json.dumps({"decision": "block", "reason": "Done Gate: " + result["reason"],
                       "systemMessage": "Done Gate stopped an unproven claim: " + result["kind"].replace("_", " ")}))
     return 0

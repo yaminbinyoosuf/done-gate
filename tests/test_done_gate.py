@@ -159,6 +159,28 @@ class Hook(unittest.TestCase):
                                 env=dict(os.environ, DONE_GATE_HOME=home)).stdout
             self.assertIn("3 unproven or false 'done' claims stopped, 1 claims verified", st)
 
+    def test_notify_commands(self):
+        with tempfile.TemporaryDirectory() as home:
+            marker = Path(home) / "calls.txt"
+            script = Path(home) / "note.sh"
+            script.write_text(f'#!/bin/sh\necho "$1" >> "{marker}"\n')
+            script.chmod(0o755)
+            os.environ["DONE_GATE_ON_BLOCK"] = f"{script} block"
+            os.environ["DONE_GATE_ON_PASS"] = f"{script} pass"
+            try:
+                t = T().prompt().edit()
+                self.run_hook(t, "All tests pass.", home)
+                t.bash("pytest", "4 passed")
+                self.run_hook(t, "All tests pass.", home)
+            finally:
+                del os.environ["DONE_GATE_ON_BLOCK"], os.environ["DONE_GATE_ON_PASS"]
+            import time
+            for _ in range(20):
+                if marker.exists() and len(marker.read_text().split()) >= 2:
+                    break
+                time.sleep(0.1)
+            self.assertEqual(sorted(marker.read_text().split()), ["block", "pass"])
+
     def test_bad_input_never_blocks(self):
         r = subprocess.run([sys.executable, str(HOOK)], input="not json", capture_output=True, text=True)
         self.assertEqual((r.returncode, r.stdout), (0, ""))
