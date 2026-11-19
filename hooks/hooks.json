@@ -1,0 +1,12 @@
+{
+  "description": "Done Gate: check 'tests pass' / 'build succeeds' claims against what actually ran before Claude stops",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/done_gate.py\"", "timeout": 30 }
+        ]
+      }
+    ]
+  }
+}

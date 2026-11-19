@@ -1,0 +1,15 @@
+{
+  "name": "cogext",
+  "description": "COGEXT plugins: check what AI agents claim against what actually happened.",
+  "owner": {
+    "name": "COGEXT",
+    "url": "https://cogextai.com"
+  },
+  "plugins": [
+    {
+      "name": "done-gate",
+      "source": "./",
+      "description": "Stops Claude from ending a turn on an unproven \"tests pass\" or \"build succeeds\", or after quietly weakening tests."
+    }
+  ]
+}
